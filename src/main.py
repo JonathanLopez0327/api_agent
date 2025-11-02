@@ -1,25 +1,21 @@
 import asyncio
 from llama_index.core.agent.workflow import FunctionAgent
-from llama_index.llms.ollama import Ollama
 from tools.generate_cases import tool_generate_cases_full
 from tools.save_cases import tool_save_cases_by_id
 from tools.save_cases_gherkin import tool_save_cases_gherkin_by_id
 from llama_index.core.callbacks import CallbackManager, TokenCountingHandler
+from llama_index.llms.openai import OpenAI
+from dotenv import load_dotenv
 
+# Cargar variables de entorno desde .env
+load_dotenv() 
 
 token_counter = TokenCountingHandler()  # verbose=True si quieres logs por llamada
 cb_manager = CallbackManager([token_counter])
 
-llm = Ollama(
-    model="gpt-oss:20b",
-    request_timeout=360.0,
-    context_window=8000,
-    callback_manager=cb_manager,          # <- IMPORTANTE: conéctalo al LLM
-)
-
 agent = FunctionAgent(
     tools=[tool_generate_cases_full, tool_save_cases_by_id, tool_save_cases_gherkin_by_id],
-    llm=llm,
+    llm=OpenAI(model="gpt-4.1"),
     callback_manager=cb_manager,
     system_prompt=(
         "Eres un asistente de QA que genera y guarda casos de prueba de API.\n"
