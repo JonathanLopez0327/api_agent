@@ -1,0 +1,967 @@
+[
+  {
+    "id": "TC-001",
+    "name": "POST - Happy Path",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 200,
+    "notes": "Caso feliz con request tal cual."
+  },
+  {
+    "id": "TC-002",
+    "name": "[BODY] Missing field: businessSearches.0.expectations.businessCity",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Se elimina el campo businessSearches.0.expectations.businessCity del body"
+  },
+  {
+    "id": "TC-003",
+    "name": "[BODY] Set null: businessSearches.0.expectations.businessCity",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": null,
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Campo en null"
+  },
+  {
+    "id": "TC-004",
+    "name": "[BODY] Empty string: businessSearches.0.expectations.businessCity",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "String vacío"
+  },
+  {
+    "id": "TC-005",
+    "name": "[BODY] Too long string: businessSearches.0.expectations.businessCity",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut CreekXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "String demasiado largo"
+  },
+  {
+    "id": "TC-006",
+    "name": "[BODY] Wrong type (str->int): businessSearches.0.expectations.businessCity",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": 123,
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Tipo incorrecto"
+  },
+  {
+    "id": "TC-007",
+    "name": "[BODY] Missing field: businessSearches.0.expectations.businessCountry",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Se elimina el campo businessSearches.0.expectations.businessCountry del body"
+  },
+  {
+    "id": "TC-008",
+    "name": "[BODY] Set null: businessSearches.0.expectations.businessCountry",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": null,
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Campo en null"
+  },
+  {
+    "id": "TC-009",
+    "name": "[BODY] Empty string: businessSearches.0.expectations.businessCountry",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "String vacío"
+  },
+  {
+    "id": "TC-010",
+    "name": "[BODY] Too long string: businessSearches.0.expectations.businessCountry",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "USXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "String demasiado largo"
+  },
+  {
+    "id": "TC-011",
+    "name": "[BODY] Wrong type (str->int): businessSearches.0.expectations.businessCountry",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": 123,
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Tipo incorrecto"
+  },
+  {
+    "id": "TC-012",
+    "name": "[BODY] Missing field: businessSearches.0.expectations.businessName",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Se elimina el campo businessSearches.0.expectations.businessName del body"
+  },
+  {
+    "id": "TC-013",
+    "name": "[BODY] Set null: businessSearches.0.expectations.businessName",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": null,
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Campo en null"
+  },
+  {
+    "id": "TC-014",
+    "name": "[BODY] Empty string: businessSearches.0.expectations.businessName",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "String vacío"
+  },
+  {
+    "id": "TC-015",
+    "name": "[BODY] Too long string: businessSearches.0.expectations.businessName",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software SushiXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "String demasiado largo"
+  },
+  {
+    "id": "TC-016",
+    "name": "[BODY] Wrong type (str->int): businessSearches.0.expectations.businessName",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": 123,
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Tipo incorrecto"
+  },
+  {
+    "id": "TC-017",
+    "name": "[BODY] Missing field: businessSearches.0.expectations.businessState",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Se elimina el campo businessSearches.0.expectations.businessState del body"
+  },
+  {
+    "id": "TC-018",
+    "name": "[BODY] Set null: businessSearches.0.expectations.businessState",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": null,
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Campo en null"
+  },
+  {
+    "id": "TC-019",
+    "name": "[BODY] Empty string: businessSearches.0.expectations.businessState",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "String vacío"
+  },
+  {
+    "id": "TC-020",
+    "name": "[BODY] Too long string: businessSearches.0.expectations.businessState",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FLXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "String demasiado largo"
+  },
+  {
+    "id": "TC-021",
+    "name": "[BODY] Wrong type (str->int): businessSearches.0.expectations.businessState",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": 123,
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Tipo incorrecto"
+  },
+  {
+    "id": "TC-022",
+    "name": "[BODY] Missing field: businessSearches.0.expectations.businessStreet",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Se elimina el campo businessSearches.0.expectations.businessStreet del body"
+  },
+  {
+    "id": "TC-023",
+    "name": "[BODY] Set null: businessSearches.0.expectations.businessStreet",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": null,
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Campo en null"
+  },
+  {
+    "id": "TC-024",
+    "name": "[BODY] Empty string: businessSearches.0.expectations.businessStreet",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "String vacío"
+  },
+  {
+    "id": "TC-025",
+    "name": "[BODY] Too long string: businessSearches.0.expectations.businessStreet",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina DrXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "String demasiado largo"
+  },
+  {
+    "id": "TC-026",
+    "name": "[BODY] Wrong type (str->int): businessSearches.0.expectations.businessStreet",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": 123,
+            "businessZip": "33073"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Tipo incorrecto"
+  },
+  {
+    "id": "TC-027",
+    "name": "[BODY] Missing field: businessSearches.0.expectations.businessZip",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Se elimina el campo businessSearches.0.expectations.businessZip del body"
+  },
+  {
+    "id": "TC-028",
+    "name": "[BODY] Set null: businessSearches.0.expectations.businessZip",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": null
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Campo en null"
+  },
+  {
+    "id": "TC-029",
+    "name": "[BODY] Empty string: businessSearches.0.expectations.businessZip",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": ""
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "String vacío"
+  },
+  {
+    "id": "TC-030",
+    "name": "[BODY] Too long string: businessSearches.0.expectations.businessZip",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "String demasiado largo"
+  },
+  {
+    "id": "TC-031",
+    "name": "[BODY] Wrong type (str->int): businessSearches.0.expectations.businessZip",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": 123
+          },
+          "name": "Software Sushi"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Tipo incorrecto"
+  },
+  {
+    "id": "TC-032",
+    "name": "[BODY] Missing field: businessSearches.0.name",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          }
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Se elimina el campo businessSearches.0.name del body"
+  },
+  {
+    "id": "TC-033",
+    "name": "[BODY] Set null: businessSearches.0.name",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": null
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Campo en null"
+  },
+  {
+    "id": "TC-034",
+    "name": "[BODY] Empty string: businessSearches.0.name",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": ""
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "String vacío"
+  },
+  {
+    "id": "TC-035",
+    "name": "[BODY] Too long string: businessSearches.0.name",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": "Software SushiXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "String demasiado largo"
+  },
+  {
+    "id": "TC-036",
+    "name": "[BODY] Wrong type (str->int): businessSearches.0.name",
+    "method": "POST",
+    "url": "https://api.mi-banco/transacciones/crear",
+    "headers": {
+      "Authorization": "Bearer token",
+      "Content-Type": "application/json"
+    },
+    "payload": {
+      "businessSearches": [
+        {
+          "expectations": {
+            "businessCity": "Coconut Creek",
+            "businessCountry": "US",
+            "businessName": "Software Sushi",
+            "businessState": "FL",
+            "businessStreet": "4566 San Mellina Dr",
+            "businessZip": "33073"
+          },
+          "name": 123
+        }
+      ]
+    },
+    "expected_status": 400,
+    "notes": "Tipo incorrecto"
+  }
+]
