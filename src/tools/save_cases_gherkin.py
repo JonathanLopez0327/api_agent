@@ -1,4 +1,5 @@
 import json
+import os
 from typing import Any, Dict, List, Optional
 from .case_store import get_cases
 
@@ -21,7 +22,8 @@ def _case_to_gherkin_steps(case: Dict[str, Any]) -> List[str]:
 
     if notes:
         lines.append(f"  # {notes}")
-    lines.append(f"  Scenario: {cid} - {name}")
+    # Omitir el identificador TC-XXX en el título del escenario según solicitud
+    lines.append(f"  Scenario: {name}")
     lines.append("    Given preparo una solicitud HTTP")
     if headers:
         lines.append("    And los headers son:")
@@ -42,7 +44,7 @@ def _case_to_gherkin_steps(case: Dict[str, Any]) -> List[str]:
 
 def cases_to_gherkin(cases: List[Dict[str, Any]], feature_name: str = "Casos de API") -> str:
     lines: List[str] = []
-    lines.append("# language: es")
+    lines.append("# language: en")
     lines.append(f"Feature: {feature_name}")
     lines.append("")
     for c in cases:
@@ -55,12 +57,18 @@ def tool_save_cases_gherkin_by_id(
     cases_id: str,
     feature_path: Optional[str] = "api_test_cases.feature",
     feature_name: Optional[str] = "Casos de API",
+    output_dir: Optional[str] = None,
 ) -> str:
     cases = get_cases(cases_id)
     if not cases:
         return f"No se encontraron casos para el id={cases_id}"
     content = cases_to_gherkin(cases, feature_name=feature_name or "Casos de API")
+    # Si se especifica output_dir, escribir dentro del directorio usando el nombre base
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
+        feature_path = os.path.join(output_dir, os.path.basename(feature_path or "api_test_cases.feature"))
+    # Asegurar directorio existente
+    os.makedirs(os.path.dirname(feature_path) or ".", exist_ok=True)
     with open(feature_path, "w", encoding="utf-8") as f:
         f.write(content)
     return f"Guardados {len(cases)} escenarios en {feature_path}"
-

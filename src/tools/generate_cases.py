@@ -1,8 +1,9 @@
-# generate_cases.py
-# Lógica pura de generación de casos de prueba de API
-# - Soporta: GET (query + path), POST/PUT/PATCH (body), DELETE/HEAD/OPTIONS
-# - Siempre recibe headers
-# - Genera: Happy Path + mutaciones negativas sobre body/query (y opcionalmente headers)
+"""
+Lógica de generación de casos de prueba de API.
+- Soporta: GET (query + path), POST/PUT/PATCH (body), DELETE/HEAD/OPTIONS
+- Siempre recibe headers
+- Genera: Caso base (camino feliz) + mutaciones negativas sobre body/query (y opcionalmente headers)
+"""
 
 import copy
 from typing import Any, Dict, List, Tuple, Union, Optional
@@ -37,12 +38,14 @@ def _flatten_paths(obj: Any, base: Path = ()) -> List[Tuple[Path, Any]]:
         paths.append((base, obj))
     return paths
 
+
 def _set_in(obj: Any, path: Path, new_value: Any) -> Any:
     cur = obj
     for p in path[:-1]:
         cur = cur[p]
     cur[path[-1]] = new_value
     return obj
+
 
 def _del_in(obj: Any, path: Path) -> Any:
     cur = obj
@@ -51,8 +54,10 @@ def _del_in(obj: Any, path: Path) -> Any:
     del cur[path[-1]]
     return obj
 
+
 def _path_to_str(path: Path) -> str:
     return ".".join(str(p) for p in path)
+
 
 # =========================
 # Mutaciones por defecto (inyectable)
@@ -60,32 +65,33 @@ def _path_to_str(path: Path) -> str:
 def _default_mutations(value: Any, negative_status: int) -> List[Tuple[str, Any, int, str]]:
     """[(nombre_mutación, nuevo_valor, expected_status, nota), ...]"""
     muts: List[Tuple[str, Any, int, str]] = []
-    muts.append(("Set null", None, negative_status, "Campo en null"))
+    muts.append(("Valor nulo", None, negative_status, "Campo nulo"))
 
     v = value
     if isinstance(v, bool):
-        muts.append(("Wrong type (bool->str)", "true" if v else "false", negative_status, "Tipo incorrecto"))
-        muts.append(("Wrong type (bool->int)", 1 if v else 0, negative_status, "Tipo incorrecto"))
+        muts.append(("Tipo incorrecto (bool→str)", "true" if v else "false", negative_status, "Tipo incorrecto"))
+        muts.append(("Tipo incorrecto (bool→int)", 1 if v else 0, negative_status, "Tipo incorrecto"))
     elif isinstance(v, (int, float)):
-        muts.append(("Wrong type (num->str)", str(v), negative_status, "Tipo incorrecto"))
-        muts.append(("Out of range (negative)", -abs(v) - 1, negative_status, "Valor fuera de rango"))
-        muts.append(("Out of range (huge)", 10**12, negative_status, "Valor fuera de rango"))
+        muts.append(("Tipo incorrecto (número→str)", str(v), negative_status, "Tipo incorrecto"))
+        muts.append(("Fuera de rango (negativo)", -abs(v) - 1, negative_status, "Valor fuera de rango"))
+        muts.append(("Fuera de rango (muy grande)", 10**12, negative_status, "Valor fuera de rango"))
     elif isinstance(v, str):
-        muts.append(("Empty string", "", negative_status, "String vacío"))
-        muts.append(("Too long string", v + ("X" * 256), negative_status, "String demasiado largo"))
-        muts.append(("Wrong type (str->int)", 123, negative_status, "Tipo incorrecto"))
+        muts.append(("Cadena vacía", "", negative_status, "Cadena vacía"))
+        muts.append(("Cadena demasiado larga", v + ("X" * 256), negative_status, "Cadena demasiado larga"))
+        muts.append(("Tipo incorrecto (str→int)", 123, negative_status, "Tipo incorrecto"))
     elif isinstance(v, list):
-        muts.append(("Empty list", [], negative_status, "Lista vacía"))
-        muts.append(("Wrong type (list->str)", "[]", negative_status, "Tipo incorrecto"))
+        muts.append(("Lista vacía", [], negative_status, "Lista vacía"))
+        muts.append(("Tipo incorrecto (lista→str)", "[]", negative_status, "Tipo incorrecto"))
     elif isinstance(v, dict):
-        muts.append(("Empty object", {}, negative_status, "Objeto vacío"))
-        muts.append(("Wrong type (obj->str)", "{}", negative_status, "Tipo incorrecto"))
+        muts.append(("Objeto vacío", {}, negative_status, "Objeto vacío"))
+        muts.append(("Tipo incorrecto (objeto→str)", "{}", negative_status, "Tipo incorrecto"))
     elif v is None:
-        muts.append(("None->str)", "null", negative_status, "Tipo incorrecto"))
-        muts.append(("None->int)", 0, negative_status, "Tipo incorrecto"))
+        muts.append(("Nulo→str", "null", negative_status, "Tipo incorrecto"))
+        muts.append(("Nulo→int", 0, negative_status, "Tipo incorrecto"))
     else:
-        muts.append(("Unknown type->str", "INVALID", negative_status, "Tipo incorrecto"))
+        muts.append(("Tipo desconocido→str", "INVALID", negative_status, "Tipo incorrecto"))
     return muts
+
 
 # =========================
 # URL helpers (path params + query)
@@ -99,11 +105,13 @@ def _apply_path_params(endpoint_template: str, path_params: Optional[Json]) -> s
         url = url.replace("{" + str(k) + "}", str(v))
     return url
 
+
 def _compose_url(endpoint_template: str, path_params: Optional[Json], query_params: Optional[Json]) -> str:
     base = _apply_path_params(endpoint_template, path_params)
     if query_params and len(query_params) > 0:
         return f"{base}?{urlencode(query_params, doseq=True)}"
     return base
+
 
 # =========================
 # Creadores de casos
@@ -113,7 +121,7 @@ def _create_base_case(
     endpoint_url: str,
     method: str,
     headers: Json,
-    base_case_name: str
+    base_case_name: str,
 ) -> Dict[str, Any]:
     return {
         "id": "TC-001",
@@ -123,8 +131,9 @@ def _create_base_case(
         "headers": copy.deepcopy(headers),
         "payload": copy.deepcopy(request_body) if request_body is not None else None,
         "expected_status": 200,
-        "notes": "Caso feliz con request tal cual."
+        "notes": "Caso base: solicitud tal cual (camino feliz).",
     }
+
 
 def _create_test_case(
     tc_id: int,
@@ -134,7 +143,7 @@ def _create_test_case(
     headers: Json,
     payload: Optional[Json],
     status: int,
-    notes: str
+    notes: str,
 ) -> Dict[str, Any]:
     return {
         "id": f"TC-{tc_id:03d}",
@@ -144,17 +153,18 @@ def _create_test_case(
         "headers": copy.deepcopy(headers),
         "payload": copy.deepcopy(payload) if payload is not None else None,
         "expected_status": status,
-        "notes": notes
+        "notes": notes,
     }
 
+
 # =========================
-# Helpers internos (tu orquestación reducida)
+# Helpers internos (orquestación)
 # =========================
 def _normalize_inputs(
     method: str,
     headers: Optional[Json],
     body: Optional[Json],
-    query: Optional[Json]
+    query: Optional[Json],
 ) -> Tuple[str, Json, Optional[Json], Json]:
     method = method.upper()
     headers = headers or {"Content-Type": "application/json"}
@@ -165,6 +175,7 @@ def _normalize_inputs(
         body = None if method in _METHODS_WITHOUT_BODY_BY_DEFAULT else {}
     return method, headers, body, query
 
+
 def _gen_body_cases(
     *,
     cases: List[Dict[str, Any]],
@@ -173,7 +184,7 @@ def _gen_body_cases(
     method: str,
     headers: Json,
     negative_status: int,
-    mutation_fn
+    mutation_fn,
 ) -> int:
     tc_counter = 2 if not cases else int(cases[-1]["id"].split("-")[-1]) + 1
     if body in (None, {}):
@@ -184,13 +195,18 @@ def _gen_body_cases(
             try:
                 variant = copy.deepcopy(body)
                 _del_in(variant, path_tuple)
-                cases.append(_create_test_case(
-                    tc_counter,
-                    f"[BODY] Missing field: {_path_to_str(path_tuple)}",
-                    method, base_url, headers, variant,
-                    negative_status,
-                    f"Se elimina el campo {_path_to_str(path_tuple)} del body"
-                ))
+                cases.append(
+                    _create_test_case(
+                        tc_counter,
+                        f"Cuerpo: falta el campo {_path_to_str(path_tuple)}",
+                        method,
+                        base_url,
+                        headers,
+                        variant,
+                        negative_status,
+                        f"Se elimina el campo {_path_to_str(path_tuple)} del cuerpo",
+                    )
+                )
                 tc_counter += 1
             except Exception:
                 pass
@@ -199,15 +215,23 @@ def _gen_body_cases(
             try:
                 variant = copy.deepcopy(body)
                 _set_in(variant, path_tuple, new_val)
-                cases.append(_create_test_case(
-                    tc_counter,
-                    f"[BODY] {mut_name}: {_path_to_str(path_tuple)}",
-                    method, base_url, headers, variant, status, note
-                ))
+                cases.append(
+                    _create_test_case(
+                        tc_counter,
+                        f"Cuerpo: {mut_name} en {_path_to_str(path_tuple)}",
+                        method,
+                        base_url,
+                        headers,
+                        variant,
+                        status,
+                        note,
+                    )
+                )
                 tc_counter += 1
             except Exception:
                 continue
     return tc_counter
+
 
 def _gen_query_cases(
     *,
@@ -220,7 +244,7 @@ def _gen_query_cases(
     headers: Json,
     body: Optional[Json],
     negative_status: int,
-    mutation_fn
+    mutation_fn,
 ) -> int:
     tc_counter = 2 if not cases else int(cases[-1]["id"].split("-")[-1]) + 1
     if not query:
@@ -232,13 +256,18 @@ def _gen_query_cases(
                 vq = copy.deepcopy(query)
                 _del_in(vq, path_tuple)
                 urlv = _compose_url(endpoint_template, path, vq)
-                cases.append(_create_test_case(
-                    tc_counter,
-                    f"[QUERY] Missing param: {_path_to_str(path_tuple)}",
-                    method, urlv, headers, body,
-                    negative_status,
-                    f"Se elimina el parámetro de query {_path_to_str(path_tuple)}"
-                ))
+                cases.append(
+                    _create_test_case(
+                        tc_counter,
+                        f"Query: falta el parámetro {_path_to_str(path_tuple)}",
+                        method,
+                        urlv,
+                        headers,
+                        body,
+                        negative_status,
+                        f"Se elimina el parámetro de query {_path_to_str(path_tuple)}",
+                    )
+                )
                 tc_counter += 1
             except Exception:
                 pass
@@ -248,15 +277,23 @@ def _gen_query_cases(
                 vq = copy.deepcopy(query)
                 _set_in(vq, path_tuple, new_val)
                 urlv = _compose_url(endpoint_template, path, vq)
-                cases.append(_create_test_case(
-                    tc_counter,
-                    f"[QUERY] {mut_name}: {_path_to_str(path_tuple)}",
-                    method, urlv, headers, body, status, note
-                ))
+                cases.append(
+                    _create_test_case(
+                        tc_counter,
+                        f"Query: {mut_name} en {_path_to_str(path_tuple)}",
+                        method,
+                        urlv,
+                        headers,
+                        body,
+                        status,
+                        note,
+                    )
+                )
                 tc_counter += 1
             except Exception:
                 continue
     return tc_counter
+
 
 def _gen_header_cases(
     *,
@@ -266,7 +303,7 @@ def _gen_header_cases(
     headers: Json,
     body: Optional[Json],
     negative_status: int,
-    mutate_headers: bool
+    mutate_headers: bool,
 ) -> int:
     tc_counter = 2 if not cases else int(cases[-1]["id"].split("-")[-1]) + 1
     if not mutate_headers or not headers:
@@ -278,17 +315,24 @@ def _gen_header_cases(
 
         vh = copy.deepcopy(headers)
         vh.pop(k, None)
-        cases.append(_create_test_case(
-            tc_counter,
-            f"[HEADERS] Missing header: {k}",
-            method, base_url, vh, body, negative_status, f"Se elimina el header {k}"
-        ))
+        cases.append(
+            _create_test_case(
+                tc_counter,
+                f"Headers: falta el header {k}",
+                method,
+                base_url,
+                vh,
+                body,
+                negative_status,
+                f"Se elimina el header {k}",
+            )
+        )
         tc_counter += 1
 
         for name, new_val, status, note in [
-            (f"[HEADERS] Empty value: {k}", "", negative_status, "Header vacío"),
-            (f"[HEADERS] Wrong type (to int): {k}", 123, negative_status, "Tipo incorrecto (no string)"),
-            (f"[HEADERS] Too long value: {k}", str(v) + ("X" * 256), negative_status, "Valor demasiado largo"),
+            (f"Headers: valor vacío en {k}", "", negative_status, "Header vacío"),
+            (f"Headers: tipo incorrecto (a entero) en {k}", 123, negative_status, "Tipo incorrecto (no string)"),
+            (f"Headers: valor demasiado largo en {k}", str(v) + ("X" * 256), negative_status, "Valor demasiado largo"),
         ]:
             vh = copy.deepcopy(headers)
             vh[k] = new_val
@@ -297,8 +341,9 @@ def _gen_header_cases(
 
     return tc_counter
 
+
 # =========================
-# Orquestador minimalista
+# Orquestador
 # =========================
 def generate_api_test_cases(
     *,
@@ -308,10 +353,15 @@ def generate_api_test_cases(
     body: Optional[Json] = None,
     query: Optional[Json] = None,
     path: Optional[Json] = None,
-    base_case_name: str = "Base - Happy Path",
+    base_case_name: str = "Caso base - Camino feliz",
     negative_status: int = 400,
     mutate_headers: bool = False,
-    mutation_fn = _default_mutations,
+    mutation_fn=_default_mutations,
+    suite_name: Optional[str] = None,
+    microservice_name: Optional[str] = None,
+    functional_need_base: Optional[str] = None,
+    functional_need_negative: Optional[str] = None,
+    use_en_dash: bool = True,
 ) -> List[Dict[str, Any]]:
     """Prepara entradas, crea el caso base y delega en helpers."""
     method, headers, body, query = _normalize_inputs(method, headers, body, query)
@@ -322,25 +372,59 @@ def generate_api_test_cases(
     ]
 
     _gen_body_cases(
-        cases=cases, body=body, base_url=base_url, method=method,
-        headers=headers, negative_status=negative_status, mutation_fn=mutation_fn
+        cases=cases,
+        body=body,
+        base_url=base_url,
+        method=method,
+        headers=headers,
+        negative_status=negative_status,
+        mutation_fn=mutation_fn,
     )
 
     _gen_query_cases(
-        cases=cases, endpoint_template=endpoint_template, path=path,
-        query=query, base_url=base_url, method=method, headers=headers, body=body,
-        negative_status=negative_status, mutation_fn=mutation_fn
+        cases=cases,
+        endpoint_template=endpoint_template,
+        path=path,
+        query=query,
+        base_url=base_url,
+        method=method,
+        headers=headers,
+        body=body,
+        negative_status=negative_status,
+        mutation_fn=mutation_fn,
     )
 
     _gen_header_cases(
-        cases=cases, base_url=base_url, method=method, headers=headers, body=body,
-        negative_status=negative_status, mutate_headers=mutate_headers
+        cases=cases,
+        base_url=base_url,
+        method=method,
+        headers=headers,
+        body=body,
+        negative_status=negative_status,
+        mutate_headers=mutate_headers,
     )
+
+    # Formato de nomenclatura si se proporcionan suite y microservicio
+    # CP – [Sistema]/[Funcionalidad] – [Necesidad Funcional] – [Descripción]
+    if suite_name and microservice_name:
+        dash = " – " if use_en_dash else " - "
+        system = microservice_name
+        feature = suite_name
+        for c in cases:
+            desc = c.get("name", "")
+            expected = int(c.get("expected_status", 200))
+            # Elegir "Necesidad Funcional" segun tipo de caso
+            if expected == 200:
+                need = functional_need_base or "Consulta de cuenta"
+            else:
+                need = functional_need_negative or "Validación de campos"
+            c["name"] = f"CP{dash}[{system}]/[{feature}]{dash}[{need}]{dash}{desc}"
 
     return cases
 
+
 # =========================
-# Wrapper "tool" completo (opcional)
+# Wrapper "tool" completo
 # =========================
 def tool_generate_cases_full(
     *,
@@ -350,13 +434,18 @@ def tool_generate_cases_full(
     body: Optional[Dict[str, Any]] = None,
     query: Optional[Dict[str, Any]] = None,
     path: Optional[Dict[str, Any]] = None,
-    base_case_name: str = "Base - Happy Path",
+    base_case_name: str = "Caso base - Camino feliz",
     negative_status: int = 400,
     mutate_headers: bool = False,
+    suite_name: Optional[str] = None,
+    microservice_name: Optional[str] = None,
+    functional_need_base: Optional[str] = None,
+    functional_need_negative: Optional[str] = None,
+    use_en_dash: bool = True,
 ) -> Dict[str, Any]:
     """
     Genera casos y los GUARDA en memoria. Devuelve un dict pequeño:
-      {'cases_id': str, 'total': int, 'examples': [str, str, str]}
+      {"cases_id": str, "total": int, "examples": [str, str, str]}
     """
     cases: List[Dict[str, Any]] = generate_api_test_cases(
         endpoint_template=endpoint_template,
@@ -368,8 +457,12 @@ def tool_generate_cases_full(
         base_case_name=base_case_name,
         negative_status=negative_status,
         mutate_headers=mutate_headers,
+        suite_name=suite_name,
+        microservice_name=microservice_name,
+        functional_need_base=functional_need_base,
+        functional_need_negative=functional_need_negative,
+        use_en_dash=use_en_dash,
     )
     cases_id = put_cases(cases)
     examples = [c["name"] for c in cases[:3]]  # primeros 3 nombres
     return {"cases_id": cases_id, "total": len(cases), "examples": examples}
-

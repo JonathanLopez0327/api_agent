@@ -29,22 +29,36 @@ agent = FunctionAgent(
 )
 
 async def main():
-    headers = {"Content-Type": "application/json", "Authorization": "Bearer token"}
-    body = {
-        "businessSearches": [{
-            "name": "Software Sushi",
-            "expectations": {
-                "businessName": "Software Sushi",
-                "businessStreet": "4566 San Mellina Dr",
-                "businessCity": "Coconut Creek",
-                "businessState": "FL",
-                "businessZip": "33073",
-                "businessCountry": "US"
-            }
-        }]
+    headers = {
+        "Content-Type": "application/json", 
+        "Authorization": "Bearer token", 
+        "sessionId": "01", 
+        "dateTime": "2025-03-18T17:27:16.262130-04:00"
     }
-    endpoint = "https://api.mi-banco/transacciones/crear"
+    body = {
+        "products": [
+            {
+                "number": "4230196605",
+                "productLine": "CuentaAhorro",
+                "currency": "DOP"
+            }
+        ],
+        "clients": [
+            {
+                "contactWays": {
+                    "contactWay": {
+                        "value": "8092123412"
+                    }
+                }
+            }
+        ]
+    }
+
+    endpoint = "https://ms-cons-cta-mio-ache-ws-dev.apps.az-aro-dev.banreservas.com/api/v1/ms-consulta-cuenta-mio-ache-ws"
     method = "POST"
+    # Nombres para prefijo: CP [suite] - [microservicio] - <caso>
+    suite_name = "Consulta Cuenta Mio"
+    microservice_name = "ms-cons-cta-mio-ache-ws"
 
     prompt = f"""
         1) CALL tool_generate_cases_full(
@@ -54,29 +68,33 @@ async def main():
         body={body},
         query=None,
         path=None,
-        base_case_name="POST - Happy Path",
+        base_case_name="POST - Camino feliz",
         negative_status=400,
-        mutate_headers=False
+        mutate_headers=False,
+        suite_name="{suite_name}",
+        microservice_name="{microservice_name}"
         )
 
         2) Con el objeto devuelto, CALL tool_save_cases_by_id(
         cases_id=<cases_id>,
         json_path="api_test_cases.json",
-        csv_path="api_test_cases.csv"
+        csv_path="api_test_cases.csv",
+        output_dir=<cases_id>
         )
 
         3) CALL tool_save_cases_gherkin_by_id(
         cases_id=<cases_id>,
         feature_path="api_test_cases.feature",
-        feature_name="Casos de API - BDD"
+        feature_name="Casos de API - BDD",
+        output_dir=<cases_id>
         )
 
         Responde SOLO con:
         - total: <número devuelto>
         - id: <cases_id>
-        - json: api_test_cases.json
-        - csv: api_test_cases.csv
-        - feature: api_test_cases.feature
+        - json: <cases_id>/api_test_cases.json
+        - csv: <cases_id>/api_test_cases.csv
+        - feature: <cases_id>/api_test_cases.feature
     """
 
     resp = await agent.run(prompt)
